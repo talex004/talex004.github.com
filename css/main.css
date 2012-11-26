@@ -1,0 +1,17 @@
+
+
+/* ==========================================================================
+   Author's custom styles
+   ========================================================================== */
+
+#loading-box {position: absolute; top: 49%; left: 45%; background: black; color:white; width: 100px; padding: 5px; text-align: center;}
+
+#info-box {position:absolute; top: 20%; left: 15%; background-color: rgba(200, 250, 250, 0.75); display: none; padding-bottom: 0px; width: 25%;}
+#info-box .nav-tabs {margin-bottom: 0px; }
+#info-box .tab-content {overflow: visible; }
+#info-box #name {font-size: 26pt; font-family: 'Convergence', sans-serif; text-transform: uppercase; display: inline-block; }
+#info-box #headline {font-size: 20pt; font-family: 'Courgette', serif;}
+#info-box #bio {}
+#info-box #links {font-family: 'Stoke', serif; }
+
+

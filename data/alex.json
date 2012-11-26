@@ -1,0 +1,17 @@
+{
+    "name": "Alex Turcu",
+    "headline": "Student, Hacker, Engineer",
+    "bio": [
+        "I am a PhD student at Virginia Tech working with the System Software Research Group on Distributed Transactional Memory."
+    ],
+    "links": [
+        "[My Blog](http://blog.quadg.net/)",
+        "[My Twitter](http://twitter.com/talex004)"
+    ],
+    "fonts": {
+        "name": "Rokkkit",
+        "headline": "sans-serif",
+        "bio": "Permanent Marker",
+        "links": "cursive"
+    }
+}
