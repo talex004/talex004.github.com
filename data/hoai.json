@@ -1,0 +1,17 @@
+{
+    "background": "img/IMG_0030.JPG",
+    "name": "Hoai Truong",
+    "headline": "Bearry, Sweettie, Cutie",
+    "bio": [
+        "I am a Virginia Tech graduate. I like jewelry and bearry stuff, and I am operating a jewelry store called Sunny Lotus."
+    ],
+    "links": [
+        "[Sunny Lotus](http://www.sunny-lotus.com/)"
+    ],
+    "fonts": {
+        "name": "Rokkkit",
+        "headline": "sans-serif",
+        "bio": "Permanent Marker",
+        "links": "cursive"
+    }
+}
