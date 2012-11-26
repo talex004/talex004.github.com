@@ -103,7 +103,7 @@ oldHash = "";
     
     // first load
     if (History.getHash() == "") {
-        History.pushState(null, null, "!#alex");
+        History.pushState(null, null, "/#alex");
     }
 
 })(window);
