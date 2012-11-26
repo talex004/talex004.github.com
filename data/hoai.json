@@ -13,5 +13,11 @@
         "headline": "sans-serif",
         "bio": "Permanent Marker",
         "links": "cursive"
+    },
+    "colors": {
+        "infobox": "rgba(200, 200, 0, 0.9)",
+        "name": "#005",
+        "headline": "#050",
+        "text": "#111"
     }
 }

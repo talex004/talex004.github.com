@@ -79,9 +79,9 @@ oldHash = "";
     });
     
     
-    
-            $("#info-box #name").text(data.name);
-            $("#info-box #headline").text(data.headline);
+            $("#info-box").css("background-color", data.colors.infobox).css("color", data.colors.text);
+            $("#info-box #name").text(data.name).css("color", data.colors.name);
+            $("#info-box #headline").text(data.headline).css("color", data.colors.headline);
             $("#info-box #bio").html(marked(data.bio.join("\n\n")));
             links = ""
             for (i=0; i<data.links.length; i++) {

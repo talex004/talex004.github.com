@@ -1,5 +1,6 @@
 {
     "background": "img/IMG_0062.JPG",
+    "box_bg": "rgba(10, 23, 11, 0.9)",
     "name": "Alex Turcu",
     "headline": "Student, Hacker, Engineer",
     "bio": [
@@ -14,5 +15,11 @@
         "headline": "sans-serif",
         "bio": "Permanent Marker",
         "links": "cursive"
+    },
+    "colors": {
+        "infobox": "rgba(100, 100, 0, 0.9)",
+        "name": "#7aa3f5",
+        "headline": "#99c99c",
+        "text": "#ffffff"
     }
 }
