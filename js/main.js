@@ -53,6 +53,8 @@ function pageState_changed() {
 function pageJSON_loaded(pageJSON) {
     console.log("<pageJSON_loaded function>");
     
+    document.title = pageJSON.name;
+    
     var infobox = $("#infobox");
     if (infobox.data("hide-complete")) {
         // Update infobox if hide animation has finished
@@ -63,9 +65,9 @@ function pageJSON_loaded(pageJSON) {
     }
     
     // Update background
-    console.log("Background: ", pageJSON["background"]);
+    console.log("Background: ", pageJSON.background);
     $.vegas({
-        src:pageJSON["background"],
+        src:pageJSON.background,
         fade:500,
         valign: '30%',
         loading: false,
