@@ -4,14 +4,16 @@
    Author's custom styles
    ========================================================================== */
 
-#loading-box {position: absolute; top: 49%; left: 45%; background: black; color:white; width: 100px; padding: 5px; text-align: center;}
+body { background: black; }
+#loadingbox {border: solid blue 2px; background: #003; color:#0F0; padding: 5px; text-align: center;}
+#loadingbox {position: absolute; top: 49%; left: 45%;  width: 100px; }
 
-#info-box {position:absolute; top: 20%; left: 15%; background-color: rgba(10, 23, 11, 0.9); display: none; padding-bottom: 0px; width: 25%;}
-#info-box .nav-tabs {margin-bottom: 0px; }
-#info-box .tab-content {overflow: visible; }
-#info-box #name {font-size: 26pt; font-family: 'Convergence', sans-serif; text-transform: uppercase; display: inline-block; color: #7aa3f5}
-#info-box #headline {font-size: 20pt; font-family: 'Courgette', serif; color: #99c99c;}
-#info-box #bio { }
-#info-box #links {font-family: 'Stoke', serif; }
+#infobox {position:absolute; top: 10%; left: 6%; background-color: rgba(10, 23, 11, 0.9); display: none; padding-bottom: 0px; width: 30%;}
+#infobox .nav-tabs {margin-bottom: 0px; }
+#infobox .tab-content {overflow: visible; }
+#infobox #name {font-size: 26pt; font-family: 'Convergence', sans-serif; text-transform: uppercase; display: inline-block; color: #7aa3f5}
+#infobox #headline {font-size: 20pt; font-family: 'Courgette', serif; color: #99c99c;}
+#infobox #bio { }
+#infobox #links {font-family: 'Stoke', serif; }
 
 

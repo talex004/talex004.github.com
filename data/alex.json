@@ -3,11 +3,12 @@
     "name": "Alex Turcu",
     "headline": "Student, Hacker, Engineer",
     "bio": [
-        "I am a PhD student at Virginia Tech working with the System Software Research Group on Distributed Transactional Memory."
+        "I am a PhD student at Virginia Tech working with the System Software Research Group on Distributed Transactional Memory.\n\nI currently live in Blacksburg, VA.  \nMy hometown is Bucharest, Romania.\n\nI like Scala, Python, Linux, amateur radio, electronics and others too many to list."
     ],
     "links": [
         "[My Blog](http://blog.quadg.net/)",
-        "[My Twitter](http://twitter.com/talex004)"
+        "[My Twitter](https://twitter.com/talex004)",
+        "[My Google+](https://plus.google.com/115231301675457069894/)"
     ],
     "fonts": {
         "name": "Rokkkit",
@@ -20,5 +21,9 @@
         "name": "#7aa3f5",
         "headline": "#99c99c",
         "text": "#ffffff"
+    },
+    "tabs": {
+        "Academic": "I obtained my combined Bachelors+Masters degree at the University of Sheffield, in UK.\n\nMy adviser at Virginia Tech is [prof. Binoy Ravindran](http://www.ece.vt.edu/faculty/ravindran.php). I recently passed my PhD proposal exam. You can find my thesis proposal on our [lab's website](http://www.ssrg.ece.vt.edu/), or directly [here](http://www.ssrg.ece.vt.edu/theses/PhdProposal_Turcu.pdf).\n\n**Publications**:\n\n* A. Turcu and B. Ravindran, [*On Open Nesting in Distributed Transactional Memory*](http://hyflow.org/hyflow/chrome/site/pub/systor12-tfaon.pdf), In SYSTOR '12, Haifa, Israel, June 2012. Best Student Paper Award\n\n* A. Turcu, B. Ravindran and M. M. Saad, [*On Closed Nesting in Distributed Transactional Memory*](http://hyflow.org/hyflow/chrome/site/pub/transact12-ntfa.pdf), In TRANSACT '12, New Orleans, LA, USA, February 2012\n\n**Technical reports**:\n\n* A. Turcu and B. Ravindran, [*Hyflow2: A High Performance Distributed Transactional Memory Framework in Scala*](http://hyflow.org/hyflow/chrome/site/pub/hyflow2-tech.pdf), ECE Dept., Virginia Tech, April 2012\n\nAll my research work is open sourced and available [on BitBucket](https://bitbucket.org/talex/)",
+        "Personal": "**Ham Radio**\n\nI am a licensed amateur radio operator. My callsign is KK4EDI. My equipment includes a Wouxun 2m handheld, two Software Defined Radios built from kits (a SoftRock and a Peaberry) and a 20W amplifier also built from a kit. I am planning to build a magnetic loop antenna soon.\n\n**Open Source Projects**\n\nI am planning to make this website software available [on GitHub](https://github.com/talex004/) soon. This is a static HTML5+jQuery alternative to About.me style pages. The page descriptions are read from JSON files, and may include Markdown formatted content. As you noticed, tabs can be used for organization."
     }
 }
