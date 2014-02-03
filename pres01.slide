@@ -1,0 +1,441 @@
+# http://godoc.org/code.google.com/p/go.tools/present
+# Present files have the following format. 
+# The first non-blank non-comment line is the title.
+# The subtitle, date, and tags lines are optional.
+Programming Languages for ECE4574/5575G
+Introduction to Java and Go
+3 Feb 2014
+
+Alex Turcu
+talex@vt.edu
+
+* Introduction
+
+* Why Java/Go?
+Main reason: easier to use than C++, both for concurrent software and in general
+
+- Extensive concurrency support in the standard library (Go also has some support in the language itself).
+- Garbage Collection.
+- Enhanced safety (e.g., impossible to access past an array's bounds, no pointer arithmetic).
+- Simpler (e.g.,  of keywords: 25 for Go, 50 for Java, 84 for C++)
+
+At the same time, their syntax is familiar and the languages are easy to learn to C++ programmers.
+
+* Java vs go
+Java:
+
+- Compiles to bytecode that runs in the Java Virtual Machine (JVM).
+- JVM has a Just-In-Time (JIT) compiler, that further compiles the bytecode into executable code on the fly. The resulting code is highly optimized and very fast, but the start-up/warm-up times are long.
+- Uses quite a lot of memory.
+
+* Java vs Go
+Go:
+
+- Compiles directly to binary code, just like C++. 
+- Somewhat slower than Java code, but starts up fast and does not need warming up.
+- Light on memory usage.
+- Easy to deploy due to static linking, but this makes binaries somewhat large (e.g., ~1MB).
+- Built in support for concurrency (channels and goroutines).
+- No support for generic programming.
+
+* Java in 7.5 slides
+
+* Hello World
+.code pres01/hello1.java
+
+- All code must live within a class.
+- Static methods do not need an object to invoke them on.
+- Variables and arguments are declared using the type followed by the var name.
+ int i
+ String s
+ String[] args
+- Visibility specified using keywords: public, protected, private.
+- Lines end in semicolons.
+
+
+* Using Packages
+.code pres01/hello2.java
+
+- Code is organized in packages.
+
+To use classes from a different package, you can either:
+
+- Always use the full name (java.util.Date, but this name is really short!)
+- Import that class (as seen above)
+- Import all classes in the package
+
+ import java.util.*;
+
+* Behind The Scenes
+.code pres01/hello2.java
+
+What do you get if you combine a String and Date?
+
+- Probably not a stringodate...
+- Java automatically uses a StringBuilder to build your string.
+ StringBuilder sb = new StringBuilder(String.valueOf(someStr));
+ sb.append(new Date()); // calls date.toString() internally
+ System.out.println(sb.toString());
+
+* Data Types
+Primitive data types:
+
+ //byte, short, int, long, float, double, boolean, char
+ int i;
+ int classNbr = 4574;
+ int h = 0xBAADF00D;
+ byte b = 0x1100;
+ double pi = 3.14159;
+
+Arrays:
+
+ int[] myArray = new int[10];
+ myArray[0] = 7;
+ int[] another = {1, 2, 3, 4, 5};
+
+* Objects
+
+- String is a class, not a primitive data type.
+
+ String greet = "Hello World";
+
+- All objects inherit from base class java.lang.Object.
+
+ Object obj = greet;
+
+- Explicit cast must be used to get the string back.
+
+ String greet2 = (String) obj;
+
+- Java uses boxing if primitive types need to be treated as objects.
+
+ Integer boxed1 = 10;
+ Integer boxed2 = new Integer(10);
+ int unboxed1 = boxed2;
+ int unboxed2 = boxed2.intValue();
+
+* Control Flow Statements: Conditionals
+
+If statement:
+
+ if (i > 0) doSomething();
+ else doSomethingElse();
+
+Switch statement:
+
+ int day = 2;
+ String result;
+ switch(day) {
+ 	case 1:
+ 		result = "Monday";
+ 		break;
+ 	case 2:
+ 		result = "Tuesday";
+ 		break;
+ 	default:
+ 		result = "Other";
+ }
+
+* Control Flow Statements: Loops
+
+- While
+
+ while(true) foo();
+
+- Do...while
+
+ do {
+ 	bool cont = foo();
+ } while(cont);
+
+- For
+
+ for (int i=0; i<10; i++) foo();
+	
+ int[] numbers = {1,2,3,4,5,6,7,8,9,10};
+ for (int item : numbers) {
+ 	System.out.println(item);
+ }
+
+* Control Flow Statements: Branching
+
+- break: terminates a loop or a switch.
+- continue: continues on the next iteration of a loop.
+- return: ends execution of the current method and returns result.
+
+* Go in 8 slides
+
+* Hello World
+
+.play pres01/hello2.go
+
+- All code is organized in packages. Package main denotes an executable program.
+- Packages must be imported before use. It is customary to always qualify an identifier with its containing package (e.g., fmt.Println).
+- It is an error to import a package without using it.
+- No semicolons.
+
+* Variables
+
+- Variables, arguments, etc., are declared using the var keyword, the variable name and the type, plus an optional initial value.
+
+ var i int
+ var j int = 7
+ var now time.Time = time.Now()
+
+- Short hand notation omits the type. The compiler will infer it from the initial value.
+
+ j := 7
+ now := time.Now()
+
+- Compared to C++/Java, it seems backwards to specify the type after the variable name. However, this makes complicated types much easier to read.
+- It is an error to declare a variable and not use it.
+
+* Data Types
+
+Primitive types:
+
+ int, uint, 
+ int{8,16,32,64}, uint{8,16,32,64}, float{32,64}, complex{64,128}
+ string, byte, rune
+
+Arrays are available but rarely used. 
+
+ var array [10]int
+
+Instead, Go uses *slices*, which are backed by an array and can seamlessly grow.
+
+ var slice []int = []int{1, 2, 3, 4, 5}	
+ slice2 := []int{1, 2, 3, 4, 5}
+ var slice3 []int
+ slice3 = append(slice3, 1, 2, 3, 4, 5)
+
+*Slicing* a slice:
+
+ slice4 := slice3[2:4] // result will be {3, 4}
+
+* Functions and Closures
+
+Syntax
+
+	func sum(a, b int) int {
+		return a+b
+	}
+
+Functions are first-class citizens in Go.
+
+	var sum2 func(int,int) int
+	sum2 = sum
+	sum3 := sum
+
+_Closures_ are functions that can capture their outside environment.
+
+.play pres01/closure.go /START OMIT/,/END OMIT/
+
+* Multiple Return Values, Error Handling
+
+Functions can return more than one value.
+
+	func sumAndDiff(a, b int) (int, int) {
+		return a+b, a-b
+	}
+	sum, diff := sumAndDiff(20, 10)
+
+Typical error handling in Go uses multiple return values and the built-in type *error*.
+
+	file, err := os.Open("file.txt") // err has type error
+	if err != nil {
+		fmt.Println("Error: ", err)
+		return
+	}
+
+Errors are checked right after the function call that may fail (in this example, os.Open).
+
+
+* Data Types: Maps
+
+Maps:
+
+- Creating a map
+ map1 := make(map[string]string)
+
+- Adding elements to a map
+
+ map1["key1"] = "value1"
+ map1["key2"] = "value2"
+
+- Looking up elements in a map
+
+ value, found := map1["key1"]
+
+- Removing elements from a map
+
+ delete(map1, "key1")
+
+* Control Flow Statements: Conditionals
+
+If statement
+
+	if temperature < 30 {
+		fmt.Println("Brrrr! It's cold...")
+	} else {
+		fmt.Println("Not that cold...")
+	}
+
+Switch statement
+
+	day := 2
+	var result string
+	switch day {
+	case 1:
+		result = "Monday"
+	case 2:
+		result = "Tuesday"
+	default:
+		result = "Other"
+	}
+
+- Break is implicit, *fallthrough* must be specified explicitly if needed.
+
+* Control Flow Statements: For
+
+For is the only loop statement.
+
+	for i:=0; i<5; i++ {
+		fmt.Println(i)
+	}
+
+For can also behave like _while_ from Java.
+
+	for count < 5 {
+		getMoreItems()
+	}
+
+Even the condition can be omitted:
+
+	for {
+		iterate()
+	}
+
+In all control flow statements, the curly braces are *required*.
+
+* End Matters
+
+* We Briefly Covered
+
+- Hello World
+- Program organization, packages
+- Variables
+- Basic data types
+- Basic control flow statements
+
+* Not Yet Covered
+
+- Object Oriented Programming
+- Interfaces
+- *Concurrency*
+
+* Homework 1
+
+A good solution to Homework 1 would likely be organized as follows.
+
+First declare the database data structure.
+
+	type DB struct {
+		Entries map[string]DBEntry
+		// other fields for the whole DB, if needed
+	}
+	
+	type DBEntry struct {
+		Name, Username, Password string
+		// other fields per each entry
+	}
+
+* Homework 1
+
+Some of the methods needed for DB:
+
+- Add, Delete, Update, Show: operate directly on the DB data structure.
+
+Reading and Writing to file must be done using serialization.
+
+- Serialization takes a regular object and writes it to a binary file.
+- Deserialization does the inverse.
+- See your language's documentation.
+- Should be a matter of copy-pasting less than 10 lines of code.
+
+* Homework 1
+
+Go provides a package to help with interpreting the command line arguments. Read the docs (package flag).
+
+Java has no equivalent package in the standard library, and you may not use a 3rd party library. To interpret the command line arguments, your code should roughly do the following:
+
+- The *main* function receives the arguments as a string array.
+- Iterate on this array.
+- If the current element is any of the flag names (-p, -u, -n, etc.), the next element is your value. Save it. Skip the next element from the iteration.
+
+
+* Homework 1
+
+Finally main function:
+
+	func main() {
+		verb, params, err := parseArgs()
+		if err != nil {
+			// Print error and exit
+		}
+		db, err := ReadDBFromFile()
+		if err != nil {
+			// Print warning but continue with empty DB
+		}
+		switch verb {
+		case "add": db.Add(params)
+		case "delete": db.Delete(params)
+		case "update": db.Update(params)
+		case "show": db.Show(params)
+		}
+		db.WriteToFile()
+	}
+
+* Thank you! Any questions?
+
+* Object Oriented Programming: Structs
+
+Go does not have objects, per se. Instead, it has *structs* and *methods*.
+
+	type Person struct {
+		First, Last string
+		Age int
+	}
+
+To create an instance of the structure:
+
+	// must specify all members
+	p1 := Person{"John", "Doe", 54} 
+ 
+	p2 := Person{ // may omit members
+		First: "John", 
+		Last: "Doe", 
+	}
+
+There are no constructors in Go. Instead, use a normal function with a standard name:
+
+	func NewPerson(first, last string, age int) Person {
+		return Person{first, last, age}
+	}
+
+* Object Oriented Programming: Methods, Visibility
+
+A method is a function that takes an additional argument, called _receiver_.
+
+	func (p Person) FullName() string {
+		return p.First + " " + p.Last
+	}
+
+A method is invoked using the dot syntax:
+
+	fmt.Println(p.FullName())
+
+Visibility of functions, methods, types, struct members, etc., from outside the current package, is determined by the first letter's case:
+
+- UPPERCASE means exported, lowercase means not exported.
+- Person, its members (First, Last, Age), and the FullName method are all exported.
