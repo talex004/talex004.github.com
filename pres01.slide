@@ -242,14 +242,20 @@ Functions can return more than one value.
 
 Typical error handling in Go uses multiple return values and the built-in type *error*.
 
-	file, err := os.Open("file.txt") // err has type error
-	if err != nil {
-		fmt.Println("Error: ", err)
-		return
+	func DoubleInt(x int) (int, error) {
+		if x < 0 { 
+			return 0, errors.New("x must be positive!") 
+		}
+		return 2*x, nil
 	}
 
-Errors are checked right after the function call that may fail (in this example, os.Open).
+Errors should be checked right after the function call that may fail.
 
+	d, err := DoubleInt(7)
+	if err != nil {
+		fmt.Println("Error doubling: ", err)
+		return
+	}
 
 * Data Types: Maps
 
@@ -334,108 +340,6 @@ In all control flow statements, the curly braces are *required*.
 - Interfaces
 - *Concurrency*
 
-* Homework 1
-
-A good solution to Homework 1 would likely be organized as follows.
-
-First declare the database data structure.
-
-	type DB struct {
-		Entries map[string]DBEntry
-		// other fields for the whole DB, if needed
-	}
-	
-	type DBEntry struct {
-		Name, Username, Password string
-		// other fields per each entry
-	}
-
-* Homework 1
-
-Some of the methods needed for DB:
-
-- Add, Delete, Update, Show: operate directly on the DB data structure.
-
-Reading and Writing to file must be done using serialization.
-
-- Serialization takes a regular object and writes it to a binary file.
-- Deserialization does the inverse.
-- See your language's documentation.
-- Should be a matter of copy-pasting less than 10 lines of code.
-
-* Homework 1
-
-Go provides a package to help with interpreting the command line arguments. Read the docs (package flag).
-
-Java has no equivalent package in the standard library, and you may not use a 3rd party library. To interpret the command line arguments, your code should roughly do the following:
-
-- The *main* function receives the arguments as a string array.
-- Iterate on this array.
-- If the current element is any of the flag names (-p, -u, -n, etc.), the next element is your value. Save it. Skip the next element from the iteration.
-
-
-* Homework 1
-
-Finally main function:
-
-	func main() {
-		verb, params, err := parseArgs()
-		if err != nil {
-			// Print error and exit
-		}
-		db, err := ReadDBFromFile()
-		if err != nil {
-			// Print warning but continue with empty DB
-		}
-		switch verb {
-		case "add": db.Add(params)
-		case "delete": db.Delete(params)
-		case "update": db.Update(params)
-		case "show": db.Show(params)
-		}
-		db.WriteToFile()
-	}
-
-* Thank you! Any questions?
-
-* Object Oriented Programming: Structs
-
-Go does not have objects, per se. Instead, it has *structs* and *methods*.
-
-	type Person struct {
-		First, Last string
-		Age int
-	}
-
-To create an instance of the structure:
-
-	// must specify all members
-	p1 := Person{"John", "Doe", 54} 
- 
-	p2 := Person{ // may omit members
-		First: "John", 
-		Last: "Doe", 
-	}
-
-There are no constructors in Go. Instead, use a normal function with a standard name:
-
-	func NewPerson(first, last string, age int) Person {
-		return Person{first, last, age}
-	}
-
-* Object Oriented Programming: Methods, Visibility
-
-A method is a function that takes an additional argument, called _receiver_.
-
-	func (p Person) FullName() string {
-		return p.First + " " + p.Last
-	}
-
-A method is invoked using the dot syntax:
-
-	fmt.Println(p.FullName())
-
-Visibility of functions, methods, types, struct members, etc., from outside the current package, is determined by the first letter's case:
-
-- UPPERCASE means exported, lowercase means not exported.
-- Person, its members (First, Last, Age), and the FullName method are all exported.
+* Next
+.link http://go-talks.appspot.com/github.com/talex004/talex004.github.com/pres02.slide Part Two
+(Discussion on Homework 1 was moved to Part Two)
