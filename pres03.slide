@@ -1,0 +1,290 @@
+Programming Languages for ECE4574/5575G
+Introduction to Java and Go (Part Three)
+17 Feb 2014
+
+Alex Turcu
+talex@vt.edu
+
+* Low-Level Concurrent Programming
+
+* Why Bother?
+
+Init:
+
+	var x = 0
+	var flag = false
+
+Thread 1:
+
+	for flag == false {}
+	fmt.Println(x)
+
+Thread 2:
+
+	x = 9
+	flag = true
+
+Q: What does Thread 1 print?
+
+* Why Bother?
+
+Potential issues:
+
+- Compiler caches _flag_ in a register, never re-reading it from memory.
+- Compiler/CPU can reorder the two statements in Thread 2.
+- Compiler could possibly go as far as elliminate any of those statements as dead code.
+
+* Happens Before
+
+Both Java and Go provide mechanisms for accessing memory that is guaranteed to execute correctly in the presence of concurrency.
+
+These mechanisms establish *Happens-Before* conditions.
+
+Thread 1: Op1, Op2, *Op3*
+Thread 2: *Op4*, Op5, Op6
+
+- If Op4 observes the effects of Op3, they form a *Happens-Before* condition, establishing a synchronization point.
+- Op4, Op5, Op6 will be guaranteed to observe the effects of Op1, Op2, Op3.
+
+* Java Volatile Variables
+
+In Java, accesses to volatile variables establish happens-before conditions. Reading value X from a volatile variable *happens-before* the corresponding write.
+
+Init:
+
+	volatile int x = 0
+	volatile bool flag = false
+
+Thread 1:
+
+	for (flag == false) {} // Op3
+	System.Out.Println("Result:" + x) // Op4
+
+Thread 2:
+
+	x = 9 // Op1
+	flag = true // Op2
+
+Op2 *happens-before* Op3, so Op4 will observe the effect of Op1.
+
+* Go Atomic Accesses
+
+In Go, any function in the "sync/atomic" package can establish happens-before conditions. Of particular interest for now are: LoadInt32 and StoreInt32 (and family).
+
+Init:
+
+	var x int32 = 0
+	var flag int32 = 0
+
+Thread 1:
+
+	for atomic.LoadInt32(&flag) == 0 {} // Op3
+	fmt.Println("Result:" + atomic.LoadInt32(&x)) // Op4
+
+Thread 2:
+
+	atomic.StoreInt32(&x, 9) // Op1
+	atomic.StoreInt32(&flag, 1) // Op2
+
+Op2 *happens-before* Op3, so Op4 will observe the effect of Op1.
+
+* Very Important
+
+When you access shared data between multiple threads, you must establish *happens-before* conditions:
+
+- Use Java volatile variables.
+- Use Go atomic accesses.
+- A number of other mechanisms that we will cover in next slides.
+
+See the Memory Model specification of your favorite language for details (links in document on Scholar).
+
+* Stronger Hardware Support
+
+Sometimes, reads and writes are not enough. Modern hardware has support for more complex atomic operations, such as Compare-And-Swap (CAS):
+
+	if X == old {
+		X = new
+		return true
+	}
+	return false
+
+Other operations you might encounter:
+
+- Add-And-Get
+- Get-And-Set
+- Increment-And-Get/Decrement-And-Get
+- Get-And-Increment/Get-And-Decrement
+
+These operations also establish *happens-before* conditions.
+
+* Stronger Hardware Support: Java
+
+Use class AtomicInteger from the _java.util.concurrent.atomic_ package.
+
+	AtomicInteger x = new AtomicInteger();
+	
+	bool success = x.compareAndSet(old, new); // Compare-And-Swap
+	int new = x.addAndGet(delta);
+	int old = x.getAndSet(new);
+	int old = x.incrementAndGet();
+
+Classes exist for other types:
+
+- AtomicBoolean, AtomicLong, AtomicReference
+- AtomicIntegerArray, AtomicLongArray
+
+* Stronger Hardware Support: Go
+
+The other functions in the "sync/atomic" package.
+
+	var x int32 = 0
+	
+	success := atomic.CompareAndSwapInt32(&x, old, new)
+	new := atomic.AddInt32(&x, delta) 	// Add-And-Get
+	old := atomic.SwapInt32(&x, new) 	// Get-And-Set
+	old := atomic.AddInt32(&x, 1)		// Increment-And-Get
+
+Functions exists for other types:
+
+- Int32, Uint32, Int64, Uint64
+- Uintptr, Pointer
+- These functions can also operate on arrays.
+
+* Higher-Level Concurrency
+
+* Locks in Go
+
+Initialization:
+
+	var lock sync.Mutex
+
+Thread 1:
+
+	lock.Lock()
+	x++ 			  // Op1
+	lock.Unlock() 	// Op2
+
+Thread 2:
+
+	lock.Lock() 	   // Op3
+	fmt.Println(x) 	// Op4
+	lock.Unlock()
+
+Op2 *happens-before* Op3, so Op4 will see the effects of Op1.
+
+* Locks in Java
+
+Java has synchronized blocks or methods:
+
+Thread 1:
+
+	public void inc() {
+		synchronized(this) {
+			x++;  // Op1
+		} 		// Op2 (exit synchronized block)
+	}
+
+Thread 2:
+	
+	public synchronized void print() { // Op3 (enter synchronized method)
+		System.out.Println(x); 		// Op4
+	}
+
+- Op2 *happens-before* Op3, so Op4 will see the effects of Op1.
+- A synchronized method is equivalent to a synchronized(this) {} block. 
+- Any Java object can be used as a lock.
+
+* java.util.concurrent
+
+j.u.c contains a number of useful concurrent classes.
+
+Concurrent Collections and Queues:
+
+- ConcurrentHashMap, ConcurrentSkipList, ConcurrentLinkedDequeue.
+
+Synchronizers:
+
+- Semaphore, CountDownLatch, etc.
+
+Executors
+
+* Java Executor Services
+
+Java Executors run an object's Call or Run method in another thread.
+Futures can be used to track the computation and retrieve its result.
+
+	class MyAction implements Callable<Integer> {
+		public Integer call() {
+			// Do some long computation here.
+			return result;
+		}
+	}
+ 
+	Future<Integer> future = myExecutorService.submit(new MyAction(args1));
+	while (!future.isDone()) {
+		// Do something else...
+	}
+	System.out.println("Result is: " + future.get());
+
+Executor service implementations:
+
+- ThreadPoolExecutor: uses an underlying pool of threads.
+- ForkJoinPool: can be used to implement work-stealing algorithms.
+
+* Concurrency in Go: Goroutines
+
+Go has concurrency support in the language itself, in the form of channels and goroutines.
+
+*Goroutines* are functions that are executed asynchronously (somewhat similar to Java executor services).
+
+	func myAction(int []args) {
+		// Do some long computation here.
+	}
+ 
+	go myAction(args)
+
+Goroutines are very light-weight, and execute on an underlying pool of threads managed by the Go runtime.
+
+* Concurrency in Go: Channels
+
+Channels are one-way streams of data. They are Go's preferred mechanism for communicating between goroutines.
+
+	c := make(chan int)
+	go func() {
+		// Do some long computation here
+		c <- result
+	}()
+	go func() {
+		result := <- c
+		fmt.Println(result)
+	}()
+
+- One goroutine writes to the channel.
+- Another goroutine reads from the channel, waiting until data is available.
+- Goroutines can have multiple readers and multiple writers.
+- Goroutines can be buffered (providing only communication) or unbuffered (also providing synchronization)
+
+* Concurrency in Go: "sync" package
+
+*sync.WaitGroup* helps wait for a number of goroutines to finish. Without this, the main() function would finish early and your goroutines may not execute.
+
+- main goroutine calls wg.Add(N)
+- main goroutine launches the N goroutines
+- main goroutine calls wg.Wait(), which blocks
+- each goroutine calls wg.Done() when it is finished.
+
+* Concurrency in Go: "sync" package
+
+*sync.Once* executes a given function only once, useful for initialization.
+
+.play pres03/once.go /START OMIT/,/END OMIT/
+
+* Notice
+
+- For any programs you write outside this class, use *high-level* concurrency whenever possible.
+- For homeworks in this class, only use *low-level* concurrency unles otherwise specified in the assignment or by me.
+
+It is allowed to:
+
+- Use sync.WaitGroup so the main() function can wait for the worker threads.
+- Starting worker threads: create Threads in Java or launch goroutines in Go.
