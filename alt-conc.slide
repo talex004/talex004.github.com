@@ -104,10 +104,10 @@ Functions that take other functions as arguments.
 
 Usage example on persistent collections:
 
-	list1 := NewList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
-	list2 := list1.filter( x => x%2==0 )            // list2 is List(2, 4, 6, 8, 10)
-	list3 := list2.map( x => x/2 )                  // list3 is List(1, 2, 3, 4, 5)
-	sum := list3.fold( (x, y) => x+y )              // sum is 15
+	var list1 = List(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+	var list2 = list1.filter( x => x%2==0 )            // list2 is List(2, 4, 6, 8, 10)
+	var list3 = list2.map( x => x/2 )                  // list3 is List(1, 2, 3, 4, 5)
+	var sum = list3.fold( (x, y) => x+y )              // sum is 15
 	return sum
 
 * Observations
