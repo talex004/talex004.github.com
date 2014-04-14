@@ -1,0 +1,449 @@
+# http://godoc.org/code.google.com/p/go.tools/present
+# Present files have the following format. 
+# The first non-blank non-comment line is the title.
+# The subtitle, date, and tags lines are optional.
+
+Alternative Approaches to Concurrency
+In Go, in Java, and in general
+14 Apr 2014
+
+* What is in your toolbox so far?
+
+Low-level concurrency:
+
+- hardware: 
+
+ - shared read/write registers (i.e., volatile variables)
+ - atomic instructions (e.g, compare-and-swap, get-and-increment)
+
+- parallel execution (threads) & mutual exclusion (locks)
+
+Concurrent data-structures:
+
+- queues, stacks, etc.
+
+Software Transactional Memory:
+ 
+- automatically manages access to shared data.
+
+
+* Other concurrency tools?
+
+Functional Programming
+
+- immutability, persistent data structures
+
+Message-passing based concurrency
+
+- the actor model
+- channels and goroutines
+
+
+
+* Functional Programming Concepts
+
+
+
+* Immutability
+
+Immutable objects *never* *change*!
+
+- instead you create modified copies.
+
+If *mutable* *state* is required:
+
+- change the _reference_ to an object
+- but do so atomically using compare-and-set.
+
+.image alt-conc/fig1.png
+
+* Persistent data structures
+
+PDS always preserves the previous versions of itself when modified
+
+- instead of making changes, methods return updated copies
+- reusing any sub-objects that have not changed.
+
+Example:
+
+	set1 := NewSet(1, 2, 3)
+	set2 := set1.Remove(3)
+	fmt.Println(set1) // Prints: Set(1, 2, 3)
+	fmt.Println(set2) // Prints: Set(1, 2)
+
+* Example: persistent tree
+
+Trees work well as persistent data structures.
+
+- especially when their height is low (i.e., high branching)
+
+.image alt-conc/fig2.png 
+
+* Avoiding mutable state
+
+Changing the root references (as seen in the prev examples) is not always required.
+
+	func foo(a, b int) Tree {
+		tree1 := NewTree(1, 2, 3, 4, 5, 6, 7)
+		tree2 := tree1.Remove(a)
+		tree3 := tree2.Add(b)
+		return tree3
+	}
+
+Pure function
+
+- has no side-effects
+- calculates a result based on its arguments
+
+
+* Higher order functions
+
+Functions that take other functions as arguments.
+
+- map, fold (reduce), filter, etc.
+
+Usage example on persistent collections:
+
+	list1 := NewList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+	list2 := list1.filter( x => x%2==0 )            // list2 is List(2, 4, 6, 8, 10)
+	list3 := list2.map( x => x/2 )                  // list3 is List(1, 2, 3, 4, 5)
+	sum := list3.fold( (x, y) => x+y )              // sum is 15
+	return sum
+
+* Observations
+
+Pros:
+
+- Makes it easy to reason about what is happening in your program, as changes to state are minimal and clear.
+- Drastically reduces the need for explicit synchronization, as (immutable) objects never change.
+
+Cons:
+
+- Writes are expensive in terms of CPU usage and memory allocation.
+- Garbage Collection is a must.
+
+* Functional programming on the JVM?
+
+Be disciplined
+
+- identify what should be immutable, use *final* keyword
+- use a persitent collections library (pcollections)
+
+Use a functional language
+
+- Scala, Clojure
+- syntactic sugar
+
+
+
+* Message-Passing Based Concurrency
+
+* Basic idea
+
+Do not invoke code directly (i.e., by calling a method)
+
+- instead, send a message
+- the infrastructure will invoke the code for handling that message.
+
+_Do_not_communicate_by_sharing_memory;_instead,_share_memory_by_communicating._
+--- Effective Go
+
+Several variations exist:
+
+- the actor model (Scala/Akka, Erlang)
+- channels and goroutines (Go)
+- reactive programming
+
+
+* The actor model
+
+Actors are the fundamental computational entity in the actor model
+
+- objects which encapsulate state and behavior
+
+There is no shared state between actors (by convention)
+
+- actors interact with each other exclusively by exchanging messages
+
+
+* Mailboxes
+
+Each actor has a *mailbox*:
+
+- messages are received in an actor's mailbox
+- buffered, messages will not be lost if the actor is sleeping
+- to send a message you must know the receipient's address.
+
+* Actor behavior
+
+To process incoming messages, actors execute their *behavior*function* for every message in their mailbox:
+
+- they can change their own state
+- they can send messages to other actors
+- they can create other actors.
+
+* Actors and concurrency
+
+There is no concurrency within individual actors
+
+- messages are processed sequentially, in the order they were received
+- accessing own state needs *no*synchronization*.
+
+Concurrency results from having many actors
+
+- separate actors can execute concurrently
+- no mutable shared state means *no*synchronization*.
+
+Exchanged messages should be immutable
+
+- thus *no*synchronization*.
+
+
+* Practical matters
+
+Actors are light-weight (unlike threads)
+
+- low memory requirements (~200 bytes)
+- low scheduling overheads
+- consumer hardware can easily manage 100,000+
+
+When *not* to use actors:
+
+- intensive CPU computations
+- blocking IO (file, network)
+
+* Actors in Java
+
+Use the Akka library!
+
+- first implement the actor's class
+
+	public class MyUntypedActor extends UntypedActor {
+	  public void onReceive(Object message) throws Exception {
+	    if (message instanceof String) {
+	      System.out.println("Received String message: " + message);
+		} 
+	  }
+	}
+
+- then create the actor
+
+	final ActorSystem system = ActorSystem.create("MySystem");
+	final ActorRef myActor = system.actorOf(Props.create(MyUntypedActor.class), "myactor");
+
+- finally, send it a message
+
+	myActor.tell("Hello Actor!", null);
+
+
+* Concurrency in Go
+
+* Channels and Goroutines
+
+The building blocks of message-passing based concurrency
+
+- more general than actors
+
+Channels
+
+- mechanism for two concurrently executing functions to synchronize and communicate
+- similar to an actor's mailbox
+
+Goroutines
+
+- mechanism for executing (any) functions concurrently
+- similar to the way actors execute
+
+* Channels
+
+Buffered
+
+- essentially a concurrent queue.
+
+Unbuffered
+
+- synchronizes a send with a receive.
+
+Usage
+
+	// Creating a channel
+	ch1 := make(chan int)
+	ch2 := make(chan int, 10)
+	
+	// Sending
+	ch2 <- 10
+	
+	// Receiving
+	x, ok := <- ch2                        // 10, true
+
+Operations sometimes block
+
+* Channels
+
+When done, close the channel
+
+	close(ch1)
+
+All present and future reads from channel immediately return
+
+	msg, ok := <- ch1                      // nil, false
+
+Not allowed after close: send, close.
+
+Range loop: shortcut for repeatedly reading from a channel until closed
+
+	for msg := range ch1 {
+		fmt.Println(msg)
+	}
+
+* Goroutines
+
+A function that executes concurrently with the caller. Launched using the *go* statement
+
+	func f1(a, b int) {
+		fmt.Println(a+b)
+	}
+	
+	func main() {
+		go f1(10, 15)
+		fmt.Println("done")
+	}
+
+Can be considered a lightweight thread
+
+- has its own stack (grows/shrinks as needed)
+- very cheap (memory, scheduling)
+
+* Building an "Actor" in Go
+
+Define its behavior
+
+	func act(mailbox <-chan string) {
+		for msg := range mailbox {
+			fmt.Println(msg)
+		}
+	}
+
+Create its channel, launch its goroutine
+
+	ch := make(chan string)
+	go act()
+
+Send it a message
+
+	ch <- "Hello fake actor!"
+
+* Select statement
+
+Chooses one communication operation that is able to proceed
+
+	select {
+		case msg1 := <-ch1:
+			fmt.Println(msg1, "arrived from ch1")
+		case msg2 := <- ch2:
+			fmt.Println(msg2, "arrived from ch2")
+		default:
+			fmt.Println("No messages yet")
+	}
+
+Without a default branch, it waits.
+
+Can use in a loop
+
+- handles multiple channels from one goroutine (like an actor with many mailboxes)
+
+
+
+* Concurrency Patterns in Go
+
+* Futures
+
+In other languages (Scala, Java/Akka), a *future* is an object that retrieves the result of a concurrent computation
+
+- the result may not yet exist
+
+In Go, use a channel!
+
+	func slow(ch chan<- int) {
+		// crunch numbers here
+		ch <- res
+	}
+	
+	func main() {
+		ch := make(chan int)
+		go slow(ch)
+		// do other things here
+		res := <- ch
+		fmt.Println(res)
+	}
+
+* Time-out
+
+What if the computation is slower than expected? 
+
+- you may want to try an alternative
+- useful in distributed systems
+
+Use select and time.After!
+
+- time.After returns a channel, blocks for the specified duration
+- afterwards, a message containing the current time is delivered on the channel.
+
+	select {
+	case res := <- ch:
+		fmt.Println("All done!")
+	case <- time.After(2 * time.Second):
+		fmt.Println("Nothing yet, let's try something else.")
+	}
+
+* Cancellable computations
+
+Use a quit channel!
+
+- check for messages on the channel using select, and abort early if any.
+
+	func slow(res chan<- int, quit <-chan bool) {
+		// ... some long iterative computation...
+		select {
+		case <-quit:
+			fmt.Println("aborted!")
+			return
+		default:
+		}
+		// ... continue long computation ...
+		res <- result
+	}
+
+* Pipelining
+
+A pipeline is a chain of data-processing stages
+
+- stages execute concurrently
+- each stage is a group of goroutines performing the same function
+- stages connected by channels
+
+Simple example:
+
+.image alt-conc/fig3-pipeline.png 250 900 
+
+* Links and References
+
+Functional Programming Principles in Scala (free course)
+
+.link https://www.coursera.org/course/progfun
+
+Principles of Reactive Programming (free course)
+
+.link https://www.coursera.org/course/reactive
+
+Akka Documentation
+
+.link http://akka.io/docs/
+
+Go Concurrency Patterns (slides/video)
+
+.link http://talks.golang.org/2012/concurrency.slide
+
+Advanced Go Concurrency (slides/video)
+
+.link http://talks.golang.org/2013/advconc.slide
